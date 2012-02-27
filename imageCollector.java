@@ -9,30 +9,33 @@ import java.util.Scanner;
 import java.util.Set;
 
 /**
- * @author Andrew Knapp
  * Given a url and a directory, downloads all the images of the URL's site to that directory
+ * @author Andrew Knapp
+ * @version 1.0
  */
 public class imageCollector 
 {
 	private String siteURL;
 	private String downloadDirectory;
 	private Scanner webPage;
+	private Set<String> imageDirectories;
 	
 	/**
-	 * 
+	 * Creates an imageCollector object given a URL and a Directory.  If no directory is given
+	 * it will save to the directory of this program.
 	 * @param url
 	 * @param directory
 	 */
 	public imageCollector(String url, String directory)
 	{
-		url = siteURL;
-		directory = downloadDirectory;
+		siteURL = url;
+		downloadDirectory = directory;
+		imageDirectories = new HashSet<String>();
 	}
 	
 	/**
-	 * 
+	 * Given a website it gets the raw page and stores it in a Scanner object.
 	 * @param webSite
-	 * @return
 	 */
 	public void fetchWebsite(String webSite)
 	{
@@ -40,9 +43,6 @@ public class imageCollector
 		{
 			URLConnection siteConnection = new URL(webSite).openConnection();
 			webPage = new Scanner(siteConnection.getInputStream());
-			
-			System.out.println("Website " + webSite + " opened!"); //debug
-		
 		} catch (IOException e) 
 		{
 			System.out.println(webSite + " is not a valid URL");
@@ -51,33 +51,28 @@ public class imageCollector
 	}
 	
 	/**
-	 * 
-	 * @param webPage
-	 * @return
+	 * Identifies the image links from a given web page.
+	 * @return a set of found links.
 	 */
 	private Set<String> identifyContent()
 	{
-		Set<String> imageDirectories= new HashSet<String>();	
+		this.imageDirectories= new HashSet<String>();	
 		while (webPage.hasNextLine())
 		{
 			String line = webPage.nextLine();
-			System.out.println(line);
+				
 			if (line.contains("img src"))
-			{
+			{	
 				Scanner lineScan = new Scanner(line);
 				while(lineScan.hasNext())
 				{
 					String linkCheck = lineScan.next();
-					
-					if(linkCheck.contains("img src="))
+					if(linkCheck.contains("src="))
 					{
-						String imageLink = linkCheck.substring(8, linkCheck.lastIndexOf('"'));
-						
-						System.out.println("image link: " + imageLink); //debug
-						
+						String imageLink = linkCheck.substring(6, linkCheck.lastIndexOf('"'));
 						if (!imageLink.contains(siteURL))
 						{
-							String baseURL = siteURL.substring(0, siteURL.lastIndexOf("/") + 1);
+							String baseURL = siteURL.substring(0, siteURL.lastIndexOf("com/") + 4);
 							String fullLink = baseURL.concat(imageLink);
 							imageDirectories.add(fullLink);
 						} else 
@@ -92,23 +87,20 @@ public class imageCollector
 	}
 	
 	/**
-	 * 
-	 * @param imageLinks
+	 * Downloads images from a collection of image links found on a website.
 	 */
 	public void downloadImages()
 	{
 		Set<String> imageDirectories = identifyContent();
 		for(String imageURL : imageDirectories)
 		{
-			System.out.println("imageURL: " + imageURL);  //debug
-			
 			String fileName = imageURL.substring(imageURL.lastIndexOf("/") + 1);
-			downloadDirectory.concat(fileName);
+			String fileLocation = downloadDirectory.concat(fileName);
 			
 			try
 			{
 				InputStream siteImageStream = new URL(imageURL).openStream();
-				OutputStream fileOutputStream = new FileOutputStream(fileName);
+				OutputStream fileOutputStream = new FileOutputStream(fileLocation);
 				byte[] b = new byte[2048];
 				int byteLength;
 				
@@ -125,6 +117,15 @@ public class imageCollector
 				System.out.println(imageURL + " is not a valid URL");
 				e.printStackTrace();
 			}	
+		}
+	}
+	
+	/**
+	 * Prints all the image URLs found on a given page.
+	 */
+	public void printImageURLs(){
+		for (String link: this.imageDirectories){
+			System.out.println(link);
 		}
 	}
 }
