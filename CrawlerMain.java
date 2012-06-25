@@ -2,7 +2,8 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-/** This program was written to count and analyze all the websites under
+/** 
+ * This program was written to count and analyze all the websites under
  * a specific domain.
  * @author Andrew Knapp
  * @version 0.1

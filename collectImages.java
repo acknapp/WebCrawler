@@ -14,7 +14,7 @@ public class collectImages
             System.err.println(" Incorrect number of arguments");
             System.err.println(" Usage: ");
             System.err.
-            println("\tjava collectImages <String URL> <output directory>");
+            println("\tjava collectImages <String URL> <String output directory>");
             System.exit(1);
         }
 		
