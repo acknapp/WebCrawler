@@ -9,14 +9,14 @@ public class collectImages
 
 	public static void main(String[] args) 
 	{
-		if (args.length != 2) 
-		{
+	    if (args.length != 2) 
+	    {
             System.err.println(" Incorrect number of arguments");
             System.err.println(" Usage: ");
             System.err.
             println("\tjava collectImages <String URL> <String output directory>");
             System.exit(1);
-        }
+            }
 		
 		String downloadSite = args[0];
 		String fileDirectory = args[1];
